@@ -16,6 +16,9 @@ The WWW::Page::Modified module attempts to determine when a web page was
 last modified. It does this by examining the HTTP headers, HTML headers
 and the body of the HTML document.
 
+It will make use of L<Date::Manip> so it is not necessarily the quickest
+of cats.
+
 =cut
 
 
@@ -33,7 +36,7 @@ use Date::Manip;
 
 use constant DEBUG => 0;
 use vars qw/$AUTOLOAD/;
-our ( $VERSION ) = '$Revision: 1.1 $ ' =~ /\$Revision:\s+([^\s]+)/;
+our ( $VERSION ) = '$Revision: 1.2 $ ' =~ /\$Revision:\s+([^\s]+)/;
 our @ISA = qw//;
 
 # ========================================================================
@@ -61,9 +64,9 @@ sub new
     bless $self, $class;
 }
 
-=item $sda->get_modified($url)
+=item $dm->get_modified($url)
 
-Returns the date modified or 0. $url can either be an HTTP::Response
+Returns the date modified or 0. $url can either be an <HTTP::Response>
 object, a URI object or just a string URL.
 
 =cut
@@ -111,6 +114,7 @@ sub get_modified
 	}
     }
     #warn $date||'[unknown]' if DEBUG;
+    warn Dumper($url) if DEBUG > 1;
     
     warn "Returning: ".$url->base.": $date\n" if DEBUG > 0;
     return UnixDate($date => '%s');
@@ -128,6 +132,10 @@ sub get_modified
 =head1 PRIVATE METHODS
 
 =over 4
+
+=item $dm->_get_url_head($url)
+
+Returns an L<HTTP::Response> object with filled out headers.
 
 =cut
 
@@ -147,6 +155,13 @@ sub _get_url_head
     warn Dumper($url) if DEBUG > 2;
     return $url;
 }
+
+=item $dm->_ua($ua)
+
+Returns the L<LWP::UserAgent> object the module is using. Sets the UA if
+a parameter is given.
+
+=cut
 
 sub _ua
 {
@@ -195,7 +210,7 @@ Copyright (c) 2001 Iain Truskett. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 
-    $Id$
+    $Id: Modified.pm,v 1.2 2002/02/03 13:10:01 koschei Exp $
 
 =head1 ACKNOWLEDGEMENTS
 

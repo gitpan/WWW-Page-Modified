@@ -1,4 +1,4 @@
-use Test::More tests => 9;
+use Test::More tests => 6;
 use Date::Manip;
 use strict;
 use warnings;
@@ -9,27 +9,15 @@ BEGIN
 }
 
 my $pkg = 'WWW::Page::Modified';
+my $dm = $pkg->new();
+isa_ok $dm => $pkg; # 2
 
+# 3-5
 my @expected = (
     {
 	title	=> 'Microsoft',
 	url	=> 'http://www.microsoft.com/',
 	date	=> 'Tue, 18 Dec 2001 02:00:37 GMT',
-    },
-    {
-	title	=> 'Dragonlair',
-	url	=> 'http://dragonlair.anu.edu.au/',
-	date	=> '0',
-    },
-    {
-        title   => 'Aurora Energy Internet Payments',
-        url     => '',
-        date    => '',
-    },
-    {
-        title   => 'Adventures in Cybersound: Peck, George',
-        url     => 'http://www.cinemedia.net/SFCV-RMIT-Annex/rnaughton/PECK_BIO.html',
-        date    => 'July 26, 2000',
     },
     {
         title   => 'Accrual Budget Implementation',
@@ -43,17 +31,13 @@ my @expected = (
     },
 );
 
-my $dm = $pkg->new();
-
-isa_ok $dm => $pkg;
-
 foreach my $site (@expected)
 {
-    #is get_modified($site->{url}) => $site->{date}, $site->{title};
     ok $dm->get_modified($site->{url}) >= ($site->{date}
     ?  UnixDate(ParseDate($site->{date}) => '%s') : 0), $site->{title};
 }
 
+# 6
 do {
     use HTTP::Request::Common qw/HEAD/;
     my $site = $expected[0];
