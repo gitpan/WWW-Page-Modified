@@ -1,0 +1,6 @@
+MANIFEST
+Makefile.PL
+lib/WWW/Page/Modified.pm
+t/doc.t
+t/info.t
+t/parse.t
